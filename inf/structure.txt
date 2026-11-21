@@ -1,0 +1,9 @@
+smart_cookie/
+├── bot.py                 # Точка входа, запуск бота
+├── config.py              # Токен, настройки (не коммитить в Git!)
+├── texts.json             # Все тексты
+├── utils.py               # Функция get_text() и другие помощники
+└── handlers/
+    ├── __init__.py
+    ├── commands.py        # /start, /help, /mywords, /train
+    └── words.py           # Логика добавления слов (скоро)

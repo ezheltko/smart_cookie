@@ -1,0 +1,13 @@
+# для aiai.by
+sk-aiai-9kQ9fw4BcaLfzBmJwoKXxSPYcuMFSbWZV2r6_biPdiE
+
+# пример запроса
+curl https://api.aiai.by/v1/chat/completions \
+  -H "Authorization: Bearer sk-YOUR-KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek-v4-flash",
+    "messages": [
+      {"role": "user", "content": "Привет!"}
+    ]
+  }'
