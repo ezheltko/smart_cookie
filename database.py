@@ -143,3 +143,21 @@ async def delete_word(user_id: int, english: str) -> bool:
         )
         await db.commit()
         return True
+
+
+async def clear_user_words(user_id: int) -> int:
+    """Удаляет ВСЕ слова пользователя. Возвращает количество удаленных."""
+    async with aiosqlite.connect(base_path) as db:
+        await db.execute("PRAGMA foreign_keys = ON;")
+
+        # Сначала узнаем, сколько слов было (для отчета пользователю)
+        cursor = await db.execute("SELECT COUNT(*) FROM words WHERE user_id = ?", (user_id,))
+        row = await cursor.fetchone()
+        count = row[0] if row else 0
+        await cursor.close()
+
+        # Удаляем всё
+        await db.execute("DELETE FROM words WHERE user_id = ?", (user_id,))
+        await db.commit()
+
+        return count
