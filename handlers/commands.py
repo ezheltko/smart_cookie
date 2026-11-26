@@ -12,12 +12,11 @@ from database import add_user, get_words, get_translation_by_word, get_random_wo
 from api import get_audio_file
 import os
 
+router = Router()
+
 
 class DeleteWordStates(StatesGroup):
     waiting_for_word = State()
-
-
-router = Router()
 
 
 @router.message(Command(commands='start'))
