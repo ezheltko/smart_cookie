@@ -3,7 +3,8 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, FSInputFile
+from aiogram.types import (Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, FSInputFile,
+                           ReplyKeyboardMarkup, KeyboardButton)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State, StatesGroup
 
@@ -26,15 +27,28 @@ async def start_command(message: Message):
     # 2. Отправляем приветствие
     text = "\n".join(texts["start"])
     await message.answer(text, parse_mode="HTML")
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="📚 Мой словарь"), KeyboardButton(text="🧠 Тренировка")],
+            [KeyboardButton(text="📖 Помощь")]
+        ],
+        resize_keyboard=True,  # Кнопки будут компактными
+        input_field_placeholder="Выбери действие или отправь слово..."
+    )
+
+    # Отправляем текст с клавиатурой
+    await message.answer(text, parse_mode="HTML", reply_markup=keyboard)
 
 
 @router.message(Command("help"))
+@router.message(F.text == "📖 Помощь")
 async def cmd_help(message: Message):
     # Берем текст по ключу "help"
     await message.answer('\n'.join(texts['help']), parse_mode='HTML')
 
 
 @router.message(Command("mywords"))
+@router.message(F.text == "📚 Мой словарь")
 async def cmd_mywords(message: Message):
     # 1. Получаем слова из базы
     words = await get_words(message.from_user.id)
@@ -68,6 +82,7 @@ async def cmd_mywords(message: Message):
 
 
 @router.message(Command("train"))
+@router.message(F.text == "🧠 Тренировка")
 async def cmd_train(message: Message):
     # 1. Достаем случайное слово
     word_data = await get_random_word(message.from_user.id)
