@@ -1,4 +1,6 @@
-# ТОЧКА ВХОДА. Запуск бота, инициализация БД, подключение роутеров.
+# ТОЧКА ВХОДА.
+# Запуск бота, инициализация БД, подключение роутеров, установка меню команд
+
 
 import asyncio
 from aiogram import Bot, Dispatcher
@@ -18,6 +20,7 @@ dp = Dispatcher()
 dp.include_router(command_router)
 dp.include_router(words_router)
 
+
 async def set_bot_commands(bot: Bot):
     """Устанавливает меню команд для бота."""
     commands = [
@@ -25,8 +28,11 @@ async def set_bot_commands(bot: Bot):
         BotCommand(command="help", description="📖 Справка по командам"),
         BotCommand(command="mywords", description="📚 Мой словарь (просмотр и удаление)"),
         BotCommand(command="train", description="🧠 Тренировка (повторение слов)"),
+        BotCommand(command="delete", description="🗑 Удалить слово"),
+        BotCommand(command="clear", description="🗑 Очистить весь словарь")
     ]
     await bot.set_my_commands(commands)
+
 
 async def main():
     # Инициализация БД до запуска бота
