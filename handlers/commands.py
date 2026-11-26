@@ -146,3 +146,17 @@ async def process_delete_word(message: Message, state: FSMContext):
 
     # Сбрасываем состояние (выходим из режима удаления)
     await state.clear()
+
+
+@router.message(Command("delete"))
+# функция удаления слов
+async def cmd_delete(message: Message, state: FSMContext):
+    # Проверяем, есть ли вообще слова в словаре
+    words = await get_words(message.from_user.id)
+    if not words:
+        await message.answer("📭 Твой словарь пуст. Нечего удалять.")
+        return
+
+    await message.answer("✍️ Введи английское слово, которое хочешь удалить:")
+    # Устанавливаем то же состояние, что и для кнопки в /mywords
+    await state.set_state(DeleteWordStates.waiting_for_word)
