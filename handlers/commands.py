@@ -9,7 +9,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State, StatesGroup
 
 from utils import texts
-from database import add_user, get_words, get_translation_by_word, get_random_word, delete_word
+from database import add_user, get_words, get_translation_by_word, get_random_word, delete_word, clear_user_words
 from api import get_audio_file
 import os
 
@@ -173,3 +173,40 @@ async def cmd_delete(message: Message, state: FSMContext):
     await message.answer("✍️ Введи английское слово, которое хочешь удалить:")
     # Устанавливаем то же состояние, что и для кнопки в /mywords
     await state.set_state(DeleteWordStates.waiting_for_word)
+
+
+@router.message(Command("clear"))
+async def cmd_clear(message: Message):
+    # Проверяем, есть ли что удалять
+    words = await get_words(message.from_user.id)
+    if not words:
+        await message.answer("📭 Твой словарь уже пуст.")
+        return
+
+    # Создаем кнопки подтверждения
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✅ Да, удалить всё", callback_data="confirm_clear")
+    builder.button(text="❌ Отмена", callback_data="cancel_clear")
+    # Делаем кнопки в один ряд
+    builder.adjust(2)
+
+    await message.answer(
+        f"⚠️ <b>Внимание!</b>\nТы собираешься удалить <b>все {len(words)} слов</b> из своего словаря.\n"
+        "Это действие <b>невозможно отменить</b>. Ты уверен?",
+        reply_markup=builder.as_markup(),
+        parse_mode="HTML"
+    )
+
+    @router.callback_query(F.data == "confirm_clear")
+    async def process_confirm_clear(callback: CallbackQuery):
+        count = await clear_user_words(callback.from_user.id)
+
+        # Редактируем сообщение, убирая кнопки
+        await callback.message.edit_text(f"🗑 Словарь очищен. Удалено слов: {count}.")
+        await callback.answer("Словарь очищен!")
+
+    @router.callback_query(F.data == "cancel_clear")
+    async def process_cancel_clear(callback: CallbackQuery):
+        # Просто удаляем сообщение с вопросом
+        await callback.message.delete()
+        await callback.answer("Отменено.")
