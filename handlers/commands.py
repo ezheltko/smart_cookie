@@ -26,7 +26,6 @@ async def start_command(message: Message):
     await add_user(message.from_user.id)
     # 2. Отправляем приветствие
     text = "\n".join(texts["start"])
-    await message.answer(text, parse_mode="HTML")
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="📚 Мой словарь"), KeyboardButton(text="🧠 Тренировка")],
@@ -72,7 +71,6 @@ async def cmd_mywords(message: Message):
         response += f"\n<i>...и еще {len(words) - 20} слов. (Пока показаны первые 20).</i>"
 
     # 4. Отправляем результат
-    await message.answer(response, parse_mode="HTML")
 
     # Создаем кнопку "Удалить слово"
     builder = InlineKeyboardBuilder()
