@@ -33,6 +33,7 @@ async def init_db():
                 russian TEXT,
                 transcription TEXT,
                 audio_url TEXT,
+                tag TEXT DEFAULT 'без тега',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(tg_id) ON DELETE CASCADE
             )
